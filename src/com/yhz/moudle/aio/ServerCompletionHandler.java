@@ -31,6 +31,11 @@ public class ServerCompletionHandler implements CompletionHandler<AsynchronousSo
                 attachment.flip();
                 //获得读取的字节数
                 System.out.println("Server -> 收到客户端的数据长度为："+resultSize);
+                //获取读取的数据
+                String resultData=new String(attachment.array()).trim();
+                System.out.println("Server -> 收到客户端的数据信息为："+resultData);
+                String response="服务器响应，收到了客户端发来的数据："+resultData;
+                write(asc,response);
             }
 
             @Override
@@ -38,5 +43,15 @@ public class ServerCompletionHandler implements CompletionHandler<AsynchronousSo
                 exc.printStackTrace();
             }
         });
+    }
+    private void write(AsynchronousSocketChannel asc,String response){
+        try{
+            ByteBuffer buf=ByteBuffer.allocate(1024);
+            buf.put(response.getBytes());
+            buf.flip();
+            asc.write(buf).get();
+        }catch(Exception e){
+            e.printStackTrace();;
+        }
     }
 }
